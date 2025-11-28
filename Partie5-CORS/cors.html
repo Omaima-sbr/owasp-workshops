@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Test CORS </h1>
+  <script>
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJzdWNjZXNzIiwiZGF0YSI6eyJpZCI6MjMsInVzZXJuYW1lIjoiIiwiZW1haWwiOiJvbWFpbWFAZ21haWwuY29tIiwicGFzc3dvcmQiOiIyNWQ1NWFkMjgzYWE0MDBhZjQ2NGM3NmQ3MTNjMDdhZCIsInJvbGUiOiJjdXN0b21lciIsImRlbHV4ZVRva2VuIjoiIiwibGFzdExvZ2luSXAiOiIwLjAuMC4wIiwicHJvZmlsZUltYWdlIjoiL2Fzc2V0cy9wdWJsaWMvaW1hZ2VzL3VwbG9hZHMvZGVmYXVsdC5zdmciLCJ0b3RwU2VjcmV0IjoiIiwiaXNBY3RpdmUiOnRydWUsImNyZWF0ZWRBdCI6IjIwMjUtMTEtMTYgMTQ6Mjc6NDMuNjcxICswMDowMCIsInVwZGF0ZWRBdCI6IjIwMjUtMTEtMTYgMTQ6Mjc6NDMuNjcxICswMDowMCIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTc2MzMwMzM5NH0.nIXNYsmuZJEHAoCabCIy5lTIHwYrCEthLX36ttUCGHlx6y-LFo-OfT5dUZRDuxKgQhk7Dszmn0N811aFP9zu8bM1we2iPm45quqI90wdP4D10tlf3RsBm4-hPJcFo95ki02I3RUr2AESAvG96FqLCgreFi-gKGPPdFsDy003wYI';
+    
+    const userId = 2;
+
+  fetch(`http://localhost:3000/rest/basket/${userId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+})
+.then(res => res.json())
+.then(data => console.log(data))
+.catch(err => console.error('Erreur :', err));
+  </script>
+</body>
+</html>
