@@ -69,6 +69,6 @@ export function searchProducts () {
       }).catch((error: ErrorWithParent) => {
         next(error.parent)
       })
-  }
+    console.log(`SELECT * FROM Products WHERE ((name LIKE '%test%')) UNION SELECT * FROM users --- OR description LIKE '%${criteria}%') AND deletedAt IS NULL) ORDER BY name`)}
 }
 // vuln-code-snippet end unionSqlInjectionChallenge dbSchemaChallenge
