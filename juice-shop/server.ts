@@ -125,11 +125,14 @@ import { serveCodeSnippet, checkVulnLines } from './routes/vulnCodeSnippet'
 import { orderHistory, allOrders, toggleDeliveryStatus } from './routes/orderHistory'
 import { continueCode, continueCodeFindIt, continueCodeFixIt } from './routes/continueCode'
 import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
-
+// import { loadSecrets } from './config/secrets'
 /* import { checkAdmin } from './middlewares/checkAdmin'
 import { deleteProduit } from './routes/deleteProduit' */
 const app = express()
 const server = new http.Server(app)
+
+//  Dans « server.ts » on importe le module
+require('dotenv').config()
 
 // errorhandler requires us from overwriting a string property on it's module which is a big no-no with esmodules :/
 const errorhandler = require('errorhandler')
@@ -186,6 +189,33 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   const whitelist = [
     'https://mycompany.com',
     'https://admin.mycompany.com']
+
+// ============================================
+// CORRECTION A02 - EXERCICE 1 : HTTPS
+// ============================================
+
+// 1. Redirection HTTP vers HTTPS en production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    // Vérifier si la requête n'est pas sécurisée (HTTP)
+    if (!req.secure) {
+      // Rediriger vers HTTPS avec code 301 (redirection permanente)
+        console.log('Redirection vers HTTPS déclenchée ! ✅')
+      return res.redirect(301, `https://${req.headers.host}${req.url}`)
+    }
+    next()
+  })
+}
+
+// 2. Configuration HSTS (HTTP Strict Transport Security)
+
+app.use(
+  helmet.hsts({
+    maxAge: 31536000, // Durée : 1 an (en secondes)
+    includeSubDomains: true, // Appliquer à tous les sous-domaines
+    preload: true// Éligible pour la liste de préchargement HSTS
+  })
+)
 
   // Autoriser localhost en dev pour faciliter le dev local
   if (process.env.NODE_ENV !== 'production') {
@@ -748,6 +778,10 @@ app.get('/metrics', metrics.serveMetrics()) // vuln-code-snippet vuln-line expos
 errorhandler.title = `${config.get<string>('application.name')} (Express ${utils.version('express')})`
 
 export async function start (readyCallback?: () => void) {
+  //  /* Charger les secret */ await loadSecrets() // ⚡ charger les secrets avant tout
+
+  /* Fin  */
+
   const datacreatorEnd = startupGauge.startTimer({ task: 'datacreator' })
   await sequelize.sync({ force: true })
   await datacreator()

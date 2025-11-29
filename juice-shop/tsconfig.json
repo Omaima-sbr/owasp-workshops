@@ -26,6 +26,8 @@
     "test/**/*.ts",
     "views/**/*.ts",
     "middlewares/**/*.ts",
+    "forhacking/**/*.ts",
+    "config/**/*.ts",
     "views/**/*.js",
     "rsn/**/*.ts",
     "*.ts"

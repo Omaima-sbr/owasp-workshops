@@ -33,6 +33,7 @@ module.exports = {
       files: ['**/*.ts'],
       parser: '@typescript-eslint/parser',
       rules: {
+        "indent": ["off"],
         'no-void': 'off', // conflicting with recommendation from @typescript-eslint/no-floating-promises
         // FIXME warnings below this line need to be checked and fixed.
         '@typescript-eslint/explicit-function-return-type': 'off',
@@ -40,7 +41,10 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/no-unsafe-argument': 'off',       
-        "@typescript-eslint/prefer-includes": "off"
+        "@typescript-eslint/prefer-includes": "off",
+        "@typescript-eslint/indent": "off",
+        "@typescript-eslint/no-confusing-void-expression": "off"
+
       }
     }
   ]
