@@ -31,7 +31,7 @@ import securityTxt from 'express-security.txt'
 import { rateLimit } from 'express-rate-limit'
 import { getStream } from 'file-stream-rotator'
 import type { Request, Response, NextFunction } from 'express'
-
+// import { Axios } from 'axios'
 import { sequelize } from './models'
 import { UserModel } from './models/user'
 import { CardModel } from './models/card'
@@ -128,6 +128,9 @@ import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType
 // import { loadSecrets } from './config/secrets'
 /* import { checkAdmin } from './middlewares/checkAdmin'
 import { deleteProduit } from './routes/deleteProduit' */
+// import { loginLimiter } from './middlewares/loginLimiter'
+// import { honeyPot, monitorAttempts } from './middlewares/securityMonitor'
+
 const app = express()
 const server = new http.Server(app)
 
@@ -650,7 +653,20 @@ app.use(
   }
 
   /* Custom Restful API */
-  app.post('/rest/user/login', login())
+  // Correction A04 limiting login attemps avec rate limit
+  // app.post('/rest/user/login', loginLimiter, login())
+    // Correction A04 using captcha verification middleware
+  // app.post('/rest/user/login', verifyCaptcha(), login())
+    app.post('/rest/user/login', login())
+  // correction A04 Honey Pot
+/*
+app.post(
+  '/rest/user/login',
+  honeyPot, // bloque les bots
+  monitorAttempts, // surveille IP et email
+  login() // ton login existant
+) */
+
   app.get('/rest/user/change-password', changePassword())
   app.post('/rest/user/reset-password', resetPassword())
   app.get('/rest/user/security-question', securityQuestion())

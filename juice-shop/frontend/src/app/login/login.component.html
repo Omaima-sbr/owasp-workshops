@@ -23,6 +23,9 @@
             matInput placeholder=""
             aria-label="Text field for the login email"
           >
+          <!--Correction A04 Honey Pot -->
+         <!-- <input type="text" name="hiddenTrap" style="display:none"> -->
+
           @if (emailControl.invalid) {
           <mat-error translate>MANDATORY_EMAIL</mat-error>
           }

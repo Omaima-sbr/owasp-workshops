@@ -1,4 +1,4 @@
-import { UserModel } from '../models/user';  // modèle correct
+ /* import { UserModel } from '../models/user';  // modèle correct
 import { sequelize } from '../models/index'; // connexion Sequelize
 
 async function showPasswords() {
@@ -18,4 +18,4 @@ showPasswords()
   .catch(err => {
     console.error(err);
     process.exit(1);
-  });
+  }); */

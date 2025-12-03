@@ -17,9 +17,18 @@ export class ProductService {
 
   constructor (private readonly http: HttpClient) { }
 
-  search (criteria: string) {
+  /* search (criteria: string) {
     return this.http.get(`${this.hostServer}/rest/products/search?q=${criteria}`).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  } */
+
+    // correction apporter dans atelier A03
+      search (criteria: string) {
+
+    const encoded = encodeURIComponent(criteria || '');
+    return this.http.get(`${this.hostServer}/rest/products/search?q=${encoded}`).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
+  
   }
+
 
   find (params: any) {
     return this.http.get(this.host + '/', { params }).pipe(map((response: any) => response.data), catchError((err) => { throw err }))
