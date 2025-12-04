@@ -24,7 +24,7 @@ import robots from 'express-robots-txt'
 import cookieParser from 'cookie-parser'
 import * as Prometheus from 'prom-client'
 import swaggerUi from 'swagger-ui-express'
-import featurePolicy from 'feature-policy'
+// import featurePolicy from 'feature-policy'
 import { IpFilter } from 'express-ipfilter'
 // @ts-expect-error FIXME due to non-existing type definitions for express-security.txt
 import securityTxt from 'express-security.txt'
@@ -248,16 +248,17 @@ app.use(
   app.use(cors(corsOptions))
 
   /* Security middleware */
-  app.use(helmet.noSniff())
-  app.use(helmet.frameguard())
+  // app.use(helmet.noSniff())
+  // app.use(helmet.frameguard())
   // app.use(helmet.xssFilter()); // = no protection from persisted XSS via RESTful API
-  app.disable('x-powered-by')
+  /* app.disable('x-powered-by')
   app.use(featurePolicy({
     features: {
       payment: ["'self'"]
     }
   }))
-
+*/
+app.use(helmet())
   /* Hiring header */
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.append('X-Recruiting', config.get('application.securityTxt.hiring'))
@@ -332,9 +333,34 @@ app.use(
 
   // vuln-code-snippet start directoryListingChallenge accessLogDisclosureChallenge
   /* /ftp directory browsing and file download */ // vuln-code-snippet neutral-line directoryListingChallenge
-  app.use('/ftp', serveIndexMiddleware, serveIndex('ftp', { icons: true })) // vuln-code-snippet vuln-line directoryListingChallenge
-  app.use('/ftp(?!/quarantine)/:file', servePublicFiles()) // vuln-code-snippet vuln-line directoryListingChallenge
-  app.use('/ftp/quarantine/:file', serveQuarantineFiles()) // vuln-code-snippet neutral-line directoryListingChallenge
+   app.use('/ftp', serveIndexMiddleware, serveIndex('ftp', { icons: true })) // vuln-code-snippet vuln-line directoryListingChallenge
+   app.use('/ftp(?!/quarantine)/:file', servePublicFiles()) // vuln-code-snippet vuln-line directoryListingChallenge
+   app.use('/ftp/quarantine/:file', serveQuarantineFiles()) // vuln-code-snippet neutral-line directoryListingChallenge
+  // ==== Correction A05 - Exo2 : Bloquer l'acces au dossiers et fichiers sensibles =====
+/*
+    app.use('/ftp', (req, res) => res.status(403).send('Accès interdit'))
+  //  BLOQUER L’ACCÈS AUX FICHIERS SENSIBLES (sql, zip, csv, env, etc.)
+app.use((req, res, next) => {
+  const forbiddenExtensions = [
+    '.sql', '.zip', '.csv', '.tar', '.gz',
+    '.env', '.key', '.pem', '.crt', '.gitignore'
+  ]
+  if (forbiddenExtensions.some(ext => req.path.endsWith(ext))) {
+    return res.status(403).send('Accès interdit')
+  }
+  next()
+})
+// BLOQUER L’ACCÈS AUX FICHIERS SENSIBLES PAR NOM
+const forbiddenFiles = [
+  '/.env',
+  '/.git/config',
+  '/jwt.pub',
+  '/premium.key',
+  '/database.sql'
+]
+for (const file of forbiddenFiles) {
+  app.get(file, (req, res) => res.status(403).send('Accès interdit'))
+} */
 
   app.use('/.well-known', serveIndexMiddleware, serveIndex('.well-known', { icons: true, view: 'details' }))
   app.use('/.well-known', express.static('.well-known'))
@@ -745,10 +771,21 @@ app.post(
   app.post('/snippets/fixes', checkCorrectFix())
 
   app.use(serveAngularClient())
-
+ // ================Correction A05 exo1-Gestion des erreurs=================
   /* Error Handling */
   app.use(verify.errorHandlingChallenge())
   app.use(errorhandler())
+/*
+  // Middleware global pour la gestion des erreurs
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    // Log complet côté serveur (utile pour le debugging interne)
+    console.error(err.stack)
+
+    // Réponse générique côté client (sans stack trace)
+    res.status(500).json({
+      error: 'Erreur interne du serveur. Veuillez réessayer plus tard.'
+    })
+  }) */
 }).catch((err) => {
   console.error(err)
 })
